@@ -1,25 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ServiceNow KB Article Editor</title>
+    <title>ServiceNow Editors - IBM Carbon Dark</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- IBM Plex Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'carbon': {
+                            'bg': '#161616',
+                            'ui-01': '#262626',
+                            'ui-02': '#393939',
+                            'ui-03': '#525252',
+                            'ui-04': '#8d8d8d',
+                            'ui-05': '#f4f4f4',
+                            'text-01': '#f4f4f4',
+                            'text-02': '#c6c6c6',
+                            'text-03': '#8d8d8d',
+                            'text-04': '#525252',
+                            'link-01': '#78a9ff',
+                            'link-02': '#a6c8ff',
+                            'support-01': '#fa4d56',
+                            'support-02': '#42be65',
+                            'support-03': '#f1c21b',
+                            'support-04': '#4589ff',
+                        }
+                    },
+                    fontFamily: {
+                        'ibm': ['IBM Plex Sans', 'sans-serif'],
+                        'ibm-mono': ['IBM Plex Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Image upload styles */
+        .drag-drop-area {
+            border: 2px dashed #525252;
+            background: #262626;
+            cursor: pointer;
+            transition: all 110ms;
+        }
+        .drag-drop-area:hover {
+            border-color: #78a9ff;
+            background: #2d3748;
+        }
+        .drag-drop-area.dragging {
+            border-color: #4589ff;
+            background: #1e3a8a;
+        }
+
+        /* General Editor content editable styles */
+        .editor-content .img-container {
+            margin: 1.5em 0;
+            text-align: center;
+        }
+
+        .editor-content .img-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+
+        .editor-content img[src^="/sys_attachment.do"] {
+            min-height: 100px;
+            background: linear-gradient(135deg, #f1f5f9 25%, transparent 25%),
+                        linear-gradient(225deg, #f1f5f9 25%, transparent 25%),
+                        linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+                        linear-gradient(315deg, #f1f5f9 25%, #e2e8f0 25%);
+            background-position: 10px 0, 10px 0, 0 0, 0 0;
+            background-size: 20px 20px;
+            background-repeat: repeat;
+            position: relative;
+        }
+
+        .editor-content img[src^="/sys_attachment.do"]::after {
+            content: '🖼️ ServiceNow Image (will display in ServiceNow)';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #64748b;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
-    
+
     <script type="text/babel">
         const { useState, useRef, useCallback, useEffect, useMemo } = React;
-        
-        // Simple icon wrapper component
+
+        // Icon wrapper component
         const Icon = ({ name, size = 20, className = "" }) => {
           const iconRef = useRef(null);
-          
+
           useEffect(() => {
             if (iconRef.current && lucide[name]) {
               lucide.createIcons({
@@ -29,11 +133,74 @@
               });
             }
           }, [name, size]);
-          
+
           return <i ref={iconRef} data-lucide={name} className={className}></i>;
         };
 
-        const ServiceNowKBEditor = () => {
+        // ==================== HOME SCREEN ====================
+        const HomeScreen = ({ onSelectEditor }) => {
+          return (
+            <div className="min-h-screen bg-carbon-bg flex items-center justify-center font-ibm">
+              <div className="max-w-5xl w-full px-8 py-12">
+                <div className="text-center mb-12">
+                  <h1 className="text-5xl font-semibold text-carbon-text-01 mb-3">
+                    ServiceNow KB Editors
+                  </h1>
+                  <p className="text-lg text-carbon-text-02">
+                    IBM Carbon Design System
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                  {/* General Editor Card */}
+                  <div
+                    onClick={() => onSelectEditor('GENERAL')}
+                    className="bg-carbon-ui-01 border border-carbon-ui-03 p-8 cursor-pointer transition-all duration-200 hover:bg-carbon-ui-02 hover:border-carbon-link-01 group"
+                  >
+                    <div className="text-5xl mb-6">📝</div>
+                    <h2 className="text-2xl font-semibold text-carbon-text-01 mb-3 group-hover:text-carbon-link-01 transition-colors">
+                      General Editor
+                    </h2>
+                    <p className="text-carbon-text-02 leading-relaxed mb-6">
+                      Clean and edit any ServiceNow KB article HTML. Remove Microsoft Office formatting,
+                      optimize code, and use visual editing with floating toolbar.
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-carbon-link-01 font-medium">
+                      <span>Open General Editor</span>
+                      <Icon name="arrow-right" size={18} />
+                    </div>
+                  </div>
+
+                  {/* 1756 Editor Card */}
+                  <div
+                    onClick={() => onSelectEditor('1756')}
+                    className="bg-carbon-ui-01 border border-carbon-ui-03 p-8 cursor-pointer transition-all duration-200 hover:bg-carbon-ui-02 hover:border-carbon-link-01 group"
+                  >
+                    <div className="text-5xl mb-6">🖥️</div>
+                    <h2 className="text-2xl font-semibold text-carbon-text-01 mb-3 group-hover:text-carbon-link-01 transition-colors">
+                      1756 Procedures Editor
+                    </h2>
+                    <p className="text-carbon-text-02 leading-relaxed mb-6">
+                      Specialized editor for IBM Mainframe 1756 operational procedures.
+                      Add, edit, and manage procedures with templates, formatting tools, and image support.
+                    </p>
+                    <div className="inline-flex items-center gap-2 text-carbon-link-01 font-medium">
+                      <span>Open 1756 Editor</span>
+                      <Icon name="arrow-right" size={18} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center text-carbon-text-03 text-sm">
+                  IBM Carbon Design System v2.0 · Dark Theme
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // ==================== GENERAL EDITOR ====================
+        const GeneralEditor = ({ onBack }) => {
           const [mode, setMode] = useState('IMPORT');
           const [rawHTML, setRawHTML] = useState('');
           const [cleanedHTML, setCleanedHTML] = useState('');
@@ -51,47 +218,39 @@
 
           const cleanHTML = useCallback((html) => {
             let cleaned = html;
-            
-            // Decode HTML entities to make the HTML more readable
+
             const decodeEntities = (text) => {
               const textarea = document.createElement('textarea');
               textarea.innerHTML = text;
               return textarea.value;
             };
-            
+
             cleaned = decodeEntities(cleaned);
-            
-            // Remove XML namespace comments
             cleaned = cleaned.replace(/<!--\?xml:namespace[^>]*-->/gi, '');
-            
-            // Remove Microsoft Office classes (but not from img or div tags)
-            cleaned = cleaned.replace(/(<(?!img|div)[^>]+)class="Mso[^"]*"/gi, '$1');
-            
-            // Remove data-* attributes (but preserve on img and div tags)
-            cleaned = cleaned.replace(/(<(?!img|div)[^>]+)\s+data-[a-z-]+="[^"]*"/gi, '$1');
-            
-            // Remove lang attributes from inline elements (but not img or div)
+            cleaned = cleaned.replace(/(<[^>]+)class="Mso[^"]*"/gi, (match, tag) => {
+              if (tag.includes('<img') || tag.includes('<div')) return match;
+              return tag;
+            });
+            cleaned = cleaned.replace(/(<[^>]+)\s+data-[a-z-]+="[^"]*"/gi, (match, tag) => {
+              if (tag.includes('<img') || tag.includes('<div')) return match;
+              return tag;
+            });
             cleaned = cleaned.replace(/(<(?:span|strong|em|b|i|u)[^>]*)\s+lang="[^"]*"/gi, '$1');
-            
-            // Clean inline styles (preserve all styles on img and div tags)
-            cleaned = cleaned.replace(/(<(?!img|div)[^>]+)style="([^"]*)"/gi, (match, tagStart, styles) => {
+            cleaned = cleaned.replace(/(<[^>]+)style="([^"]*)"/gi, (match, tagStart, styles) => {
+              if (tagStart.includes('<img') || tagStart.includes('<div')) return match;
               const cleanedStyles = styles.split(';').filter(style => !style.trim().startsWith('mso-')).join(';');
               return cleanedStyles ? `${tagStart}style="${cleanedStyles}"` : tagStart;
             });
-            
-            // Remove empty span tags
             cleaned = cleaned.replace(/<span[^>]*>\s*<\/span>/gi, '');
-            
-            // Collapse nested spans with no semantic value
+
             let prevCleaned = '';
             while (prevCleaned !== cleaned) {
               prevCleaned = cleaned;
               cleaned = cleaned.replace(/<span([^>]*)>\s*<span([^>]*)>(.*?)<\/span>\s*<\/span>/gi, '<span$2>$3</span>');
             }
-            
-            // Trim excessive whitespace
+
             cleaned = cleaned.replace(/\n\s*\n\s*\n/g, '\n\n');
-            
+
             return cleaned.trim();
           }, []);
 
@@ -224,49 +383,106 @@
           }, [mode, editedHTML, originalStats, calculateStats]);
 
           return (
-            <div className="min-h-screen bg-slate-900 flex flex-col">
-              <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+            <div className="min-h-screen bg-carbon-bg flex flex-col font-ibm">
+              <header className="bg-carbon-ui-01 border-b border-carbon-ui-03 px-6 py-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
-                  <div>
-                    <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                      <Icon name="file-code" size={28} />
-                      SN Article Editor
-                    </h1>
-                    <p className="text-slate-400 text-sm mt-1">Visual editor for ServiceNow Knowledge Articles</p>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={onBack}
+                      className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors"
+                      title="Back to Home"
+                    >
+                      <Icon name="arrow-left" size={18} />
+                      <span className="text-sm">Home</span>
+                    </button>
+                    <div>
+                      <h1 className="text-2xl font-semibold text-carbon-text-01 flex items-center gap-2">
+                        <Icon name="file-code" size={28} />
+                        General Editor
+                      </h1>
+                      <p className="text-carbon-text-02 text-sm mt-1">Clean & edit ServiceNow KB articles</p>
+                    </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    mode === 'IMPORT' ? 'bg-orange-500/20 text-orange-400' :
-                    mode === 'EDIT' ? 'bg-blue-500/20 text-blue-400' :
-                    'bg-green-500/20 text-green-400'
+                  <div className={`px-3 py-1 text-sm font-medium ${
+                    mode === 'IMPORT' ? 'bg-carbon-support-03/20 text-carbon-support-03' :
+                    mode === 'EDIT' ? 'bg-carbon-support-04/20 text-carbon-support-04' :
+                    'bg-carbon-support-02/20 text-carbon-support-02'
                   }`}>
                     {mode}
                   </div>
                 </div>
               </header>
 
+              {/* How to Use Section */}
+              <div className="bg-carbon-ui-01 border-b border-carbon-ui-03 px-6 py-3">
+                <details className="max-w-7xl mx-auto">
+                  <summary className="cursor-pointer text-carbon-text-01 font-medium flex items-center gap-2 hover:text-carbon-link-01 transition-colors">
+                    <span className="text-lg">📖</span>
+                    <span>How to Use - General Editor</span>
+                  </summary>
+                  <div className="mt-4 p-4 bg-carbon-ui-02 border-l-4 border-carbon-link-01 text-carbon-text-02 text-sm">
+                    <ol className="space-y-3 mb-4">
+                      <li>
+                        <strong className="text-carbon-text-01">1. Import HTML</strong>
+                        <ul className="ml-4 mt-1 text-xs space-y-1">
+                          <li>• Paste raw HTML from ServiceNow source code view</li>
+                          <li>• Or click "Paste from Clipboard" button</li>
+                          <li>• Click "Clean & Import" to process and remove MS Office formatting</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong className="text-carbon-text-01">2. Edit Visually</strong>
+                        <ul className="ml-4 mt-1 text-xs space-y-1">
+                          <li>• Edit content directly in the white editing area</li>
+                          <li>• Select text to show floating toolbar with formatting options</li>
+                          <li>• Use toolbar for: Bold, Italic, Headings, Lists, Links, etc.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <strong className="text-carbon-text-01">3. Export HTML</strong>
+                        <ul className="ml-4 mt-1 text-xs space-y-1">
+                          <li>• Click "Export HTML" when done editing</li>
+                          <li>• Review statistics (characters and tags before/after)</li>
+                          <li>• Click "Copy to Clipboard" and paste back into ServiceNow</li>
+                        </ul>
+                      </li>
+                    </ol>
+                    <div className="pt-3 border-t border-carbon-ui-03">
+                      <strong className="text-carbon-text-01">💡 Tips & Best Practices:</strong>
+                      <ul className="ml-4 mt-2 text-xs space-y-1">
+                        <li>• ServiceNow images (sys_attachment.do) appear broken here but work correctly in ServiceNow</li>
+                        <li>• The cleaner automatically removes Microsoft Office formatting (MSO classes, styles)</li>
+                        <li>• Use "Show Preview" to see the final result before copying</li>
+                        <li>• Changes are tracked - look for "unsaved" indicator in Edit mode</li>
+                      </ul>
+                    </div>
+                  </div>
+                </details>
+              </div>
+
               <main className="flex-1 flex flex-col overflow-hidden">
                 {mode === 'IMPORT' && (
                   <div className="flex-1 flex flex-col p-8 max-w-6xl mx-auto w-full">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-white mb-2">Import HTML</h2>
-                      <p className="text-slate-400">Paste the raw HTML from ServiceNow's source code view</p>
-                      <div className="mt-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded text-blue-300 text-sm">
+                      <h2 className="text-2xl font-semibold text-carbon-text-01 mb-2">Import HTML</h2>
+                      <p className="text-carbon-text-02">Paste the raw HTML from ServiceNow's source code view</p>
+                      <div className="mt-2 p-3 bg-carbon-support-04/10 border border-carbon-support-04/30 text-carbon-text-02 text-sm">
                         <strong>Note:</strong> ServiceNow images (sys_attachment.do) will show as broken here but will work correctly when pasted back into ServiceNow.
                       </div>
                     </div>
-                    <div className="flex-1 flex flex-col bg-slate-800 rounded-lg p-4">
+                    <div className="flex-1 flex flex-col bg-carbon-ui-01 p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Icon name="file-code" />
-                          <span className="text-slate-300 font-medium">HTML Input</span>
+                          <span className="text-carbon-text-01 font-medium">HTML Input</span>
                         </div>
                         <div className="flex items-center gap-4">
-                          <span className="text-slate-400 text-sm">
+                          <span className="text-carbon-text-02 text-sm">
                             {rawHTML.length.toLocaleString()} chars
                             {rawHTML && ` • ~${(rawHTML.match(/<[^>]+>/g) || []).length} tags`}
                           </span>
                           {rawHTML && (
-                            <button onClick={() => setRawHTML('')} className="text-slate-400 hover:text-white">
+                            <button onClick={() => setRawHTML('')} className="text-carbon-text-02 hover:text-carbon-text-01">
                               <Icon name="x" size={18} />
                             </button>
                           )}
@@ -276,13 +492,13 @@
                         ref={importTextareaRef}
                         value={rawHTML}
                         onChange={(e) => setRawHTML(e.target.value)}
-                        className="flex-1 bg-slate-900 text-slate-200 font-mono text-sm p-4 rounded border border-slate-700 focus:border-blue-500 focus:outline-none resize-none"
+                        className="flex-1 bg-carbon-bg text-carbon-text-01 font-ibm-mono text-sm p-4 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none resize-none"
                         placeholder="Paste your HTML here..."
                       />
                       <div className="flex items-center gap-3 mt-4">
                         <button
                           onClick={handlePasteFromClipboard}
-                          className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded"
+                          className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors"
                         >
                           <Icon name="clipboard-paste" size={18} />
                           Paste from Clipboard
@@ -290,7 +506,7 @@
                         <button
                           onClick={handleImport}
                           disabled={!rawHTML.trim()}
-                          className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded font-medium"
+                          className="flex items-center gap-2 px-6 py-2 bg-carbon-support-04 hover:bg-blue-600 disabled:bg-carbon-ui-03 disabled:text-carbon-text-04 text-white font-medium transition-colors"
                         >
                           <Icon name="arrow-right" size={18} />
                           Clean & Import
@@ -302,30 +518,30 @@
 
                 {mode === 'EDIT' && (
                   <div className="flex-1 flex flex-col">
-                    <div className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+                    <div className="bg-carbon-ui-01 border-b border-carbon-ui-03 px-6 py-4 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <button onClick={handleBackToImport} className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">
+                        <button onClick={handleBackToImport} className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors">
                           <Icon name="arrow-left" size={18} />
                           Back to Import
                         </button>
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                          <span className="text-white font-medium">Visual Editor</span>
-                          {hasUnsavedChanges && <span className="text-slate-400 text-sm">(unsaved)</span>}
+                          <div className="w-2 h-2 bg-carbon-support-04 rounded-full animate-pulse" />
+                          <span className="text-carbon-text-01 font-medium">Visual Editor</span>
+                          {hasUnsavedChanges && <span className="text-carbon-text-02 text-sm">(unsaved)</span>}
                         </div>
                       </div>
-                      <button onClick={handleExport} className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium">
+                      <button onClick={handleExport} className="flex items-center gap-2 px-6 py-2 bg-carbon-support-02 hover:bg-green-700 text-carbon-bg font-medium transition-colors">
                         Export HTML
                         <Icon name="arrow-right" size={18} />
                       </button>
                     </div>
-                    <div className="flex-1 overflow-auto bg-slate-700 p-8">
+                    <div className="flex-1 overflow-auto bg-carbon-ui-02 p-8">
                       <div
                         ref={editorRef}
                         contentEditable
                         suppressContentEditableWarning
                         dangerouslySetInnerHTML={{ __html: cleanedHTML }}
-                        className="max-w-4xl mx-auto bg-white p-12 rounded-lg shadow-2xl min-h-[800px] focus:outline-none editor-content"
+                        className="max-w-4xl mx-auto bg-white p-12 shadow-2xl min-h-[800px] focus:outline-none editor-content"
                         style={{ lineHeight: '1.6', fontSize: '16px', color: '#1e293b' }}
                       />
                     </div>
@@ -335,21 +551,21 @@
                 {mode === 'EXPORT' && (
                   <div className="flex-1 flex flex-col p-8 max-w-6xl mx-auto w-full">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-white mb-2">Export HTML</h2>
-                      <p className="text-slate-400">Copy the modified HTML and paste it back into ServiceNow</p>
+                      <h2 className="text-2xl font-semibold text-carbon-text-01 mb-2">Export HTML</h2>
+                      <p className="text-carbon-text-02">Copy the modified HTML and paste it back into ServiceNow</p>
                     </div>
-                    <div className="flex-1 flex flex-col bg-slate-800 rounded-lg p-4">
+                    <div className="flex-1 flex flex-col bg-carbon-ui-01 p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <Icon name="file-text" />
-                          <span className="text-slate-300 font-medium">HTML Output</span>
+                          <span className="text-carbon-text-01 font-medium">HTML Output</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
-                          <span className="text-slate-400">
+                          <span className="text-carbon-text-02">
                             {currentStats.chars.toLocaleString()} chars • {currentStats.tags} tags
                           </span>
                           {(statsDiff.chars !== 0 || statsDiff.tags !== 0) && (
-                            <span className="text-blue-400">
+                            <span className="text-carbon-support-04">
                               ({statsDiff.chars > 0 ? '+' : ''}{statsDiff.chars} chars, {statsDiff.tags > 0 ? '+' : ''}{statsDiff.tags} tags)
                             </span>
                           )}
@@ -359,37 +575,37 @@
                         ref={exportTextareaRef}
                         value={editedHTML}
                         readOnly
-                        className="flex-1 bg-slate-900 text-slate-200 font-mono text-sm p-4 rounded border border-slate-700 resize-none"
+                        className="flex-1 bg-carbon-bg text-carbon-text-01 font-ibm-mono text-sm p-4 border border-carbon-ui-03 resize-none"
                       />
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-3">
-                          <button onClick={handleBackToEditor} className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">
+                          <button onClick={handleBackToEditor} className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors">
                             <Icon name="arrow-left" size={18} />
                             Back to Editor
                           </button>
-                          <button onClick={handleStartOver} className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">
+                          <button onClick={handleStartOver} className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors">
                             <Icon name="rotate-ccw" size={18} />
                             Start Over
                           </button>
                         </div>
                         <div className="flex items-center gap-3">
-                          <button onClick={() => setShowPreview(!showPreview)} className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded">
+                          <button onClick={() => setShowPreview(!showPreview)} className="flex items-center gap-2 px-4 py-2 bg-carbon-ui-02 hover:bg-carbon-ui-03 text-carbon-text-01 transition-colors">
                             <Icon name={showPreview ? "eye-off" : "eye"} size={18} />
                             {showPreview ? 'Hide' : 'Show'} Preview
                           </button>
-                          <button onClick={handleCopyToClipboard} className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium">
+                          <button onClick={handleCopyToClipboard} className="flex items-center gap-2 px-6 py-2 bg-carbon-support-02 hover:bg-green-700 text-carbon-bg font-medium transition-colors">
                             <Icon name="clipboard-copy" size={18} />
                             Copy to Clipboard
                           </button>
                         </div>
                       </div>
                       {showPreview && (
-                        <div className="mt-4 border-t border-slate-700 pt-4">
+                        <div className="mt-4 border-t border-carbon-ui-03 pt-4">
                           <div className="flex items-center gap-2 mb-3">
                             <Icon name="eye" size={18} />
-                            <span className="text-slate-300 font-medium">Preview</span>
+                            <span className="text-carbon-text-01 font-medium">Preview</span>
                           </div>
-                          <div className="bg-white p-8 rounded max-h-96 overflow-auto">
+                          <div className="bg-white p-8 max-h-96 overflow-auto">
                             <div dangerouslySetInnerHTML={{ __html: editedHTML }} />
                           </div>
                         </div>
@@ -401,55 +617,55 @@
 
               {showToolbar && mode === 'EDIT' && (
                 <div
-                  className="fixed bg-slate-800 text-white rounded-lg shadow-2xl p-2 flex items-center gap-1 z-40"
+                  className="fixed bg-carbon-ui-01 text-carbon-text-01 shadow-2xl p-2 flex items-center gap-1 z-40 border border-carbon-ui-03"
                   style={{ left: `${toolbarPosition.x}px`, top: `${toolbarPosition.y}px`, transform: 'translate(-50%, -100%)' }}
                 >
-                  <button onClick={() => execCommand('bold')} className="p-2 hover:bg-slate-700 rounded" title="Bold">
+                  <button onClick={() => execCommand('bold')} className="p-2 hover:bg-carbon-ui-02" title="Bold">
                     <Icon name="bold" size={16} />
                   </button>
-                  <button onClick={() => execCommand('italic')} className="p-2 hover:bg-slate-700 rounded" title="Italic">
+                  <button onClick={() => execCommand('italic')} className="p-2 hover:bg-carbon-ui-02" title="Italic">
                     <Icon name="italic" size={16} />
                   </button>
-                  <button onClick={() => execCommand('underline')} className="p-2 hover:bg-slate-700 rounded" title="Underline">
+                  <button onClick={() => execCommand('underline')} className="p-2 hover:bg-carbon-ui-02" title="Underline">
                     <Icon name="underline" size={16} />
                   </button>
-                  <button onClick={() => execCommand('strikethrough')} className="p-2 hover:bg-slate-700 rounded" title="Strikethrough">
+                  <button onClick={() => execCommand('strikethrough')} className="p-2 hover:bg-carbon-ui-02" title="Strikethrough">
                     <Icon name="strikethrough" size={16} />
                   </button>
-                  <div className="w-px h-6 bg-slate-600 mx-1" />
-                  <button onClick={() => execCommand('formatBlock', '<h1>')} className="p-2 hover:bg-slate-700 rounded" title="H1">
+                  <div className="w-px h-6 bg-carbon-ui-03 mx-1" />
+                  <button onClick={() => execCommand('formatBlock', '<h1>')} className="p-2 hover:bg-carbon-ui-02" title="H1">
                     <Icon name="heading-1" size={16} />
                   </button>
-                  <button onClick={() => execCommand('formatBlock', '<h2>')} className="p-2 hover:bg-slate-700 rounded" title="H2">
+                  <button onClick={() => execCommand('formatBlock', '<h2>')} className="p-2 hover:bg-carbon-ui-02" title="H2">
                     <Icon name="heading-2" size={16} />
                   </button>
-                  <button onClick={() => execCommand('formatBlock', '<h3>')} className="p-2 hover:bg-slate-700 rounded" title="H3">
+                  <button onClick={() => execCommand('formatBlock', '<h3>')} className="p-2 hover:bg-carbon-ui-02" title="H3">
                     <Icon name="heading-3" size={16} />
                   </button>
-                  <button onClick={() => execCommand('formatBlock', '<p>')} className="p-2 hover:bg-slate-700 rounded" title="Paragraph">
+                  <button onClick={() => execCommand('formatBlock', '<p>')} className="p-2 hover:bg-carbon-ui-02" title="Paragraph">
                     <Icon name="pilcrow" size={16} />
                   </button>
-                  <div className="w-px h-6 bg-slate-600 mx-1" />
-                  <button onClick={() => execCommand('insertOrderedList')} className="p-2 hover:bg-slate-700 rounded" title="Ordered List">
+                  <div className="w-px h-6 bg-carbon-ui-03 mx-1" />
+                  <button onClick={() => execCommand('insertOrderedList')} className="p-2 hover:bg-carbon-ui-02" title="Ordered List">
                     <Icon name="list-ordered" size={16} />
                   </button>
-                  <button onClick={() => execCommand('insertUnorderedList')} className="p-2 hover:bg-slate-700 rounded" title="Unordered List">
+                  <button onClick={() => execCommand('insertUnorderedList')} className="p-2 hover:bg-carbon-ui-02" title="Unordered List">
                     <Icon name="list" size={16} />
                   </button>
                   <button onClick={() => {
                     const url = prompt('Enter URL:');
                     if (url) execCommand('createLink', url);
-                  }} className="p-2 hover:bg-slate-700 rounded" title="Link">
+                  }} className="p-2 hover:bg-carbon-ui-02" title="Link">
                     <Icon name="link" size={16} />
                   </button>
-                  <button onClick={() => execCommand('removeFormat')} className="p-2 hover:bg-slate-700 rounded" title="Clear Format">
+                  <button onClick={() => execCommand('removeFormat')} className="p-2 hover:bg-carbon-ui-02" title="Clear Format">
                     <Icon name="remove-formatting" size={16} />
                   </button>
                 </div>
               )}
 
               {notification && (
-                <div className={`fixed top-4 right-4 ${notification.type === 'error' ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50`}>
+                <div className={`fixed top-4 right-4 ${notification.type === 'error' ? 'bg-carbon-support-01' : 'bg-carbon-support-02'} text-white px-6 py-3 flex items-center gap-2 z-50 shadow-lg`}>
                   <Icon name={notification.type === 'success' ? 'check' : 'alert-circle'} size={20} />
                   <span>{notification.message}</span>
                 </div>
@@ -458,67 +674,721 @@
           );
         };
 
-        ReactDOM.render(<ServiceNowKBEditor />, document.getElementById('root'));
+        // ==================== 1756 EDITOR ====================
+        const Editor1756 = ({ onBack }) => {
+          const [procedures, setProcedures] = useState([]);
+          const [showForm, setShowForm] = useState(false);
+          const [editingProcedure, setEditingProcedure] = useState(null);
+          const [searchTerm, setSearchTerm] = useState('');
+          const [notification, setNotification] = useState(null);
+
+          const showNotification = (message, type = 'success') => {
+            setNotification({ message, type });
+            setTimeout(() => setNotification(null), 3000);
+          };
+
+          const getCategory = (msgCode) => {
+            if (!msgCode) return 'OUTROS';
+            const first = msgCode.trim()[0].toUpperCase();
+            if (first === 'I') return 'I';
+            if (first === 'A') return 'A';
+            if (first === 'D') return 'D';
+            if (first === 'C') return 'C';
+            if (['B', 'E'].includes(first)) return 'BE';
+            if (['W', 'N', '$'].includes(first)) return 'WN$';
+            if (['S', 'J', 'H', 'O'].includes(first)) return 'SJHO';
+            return 'OUTROS';
+          };
+
+          const exportToHTML = () => {
+            const cssBlock = `<style>*{box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:1.6;margin:0;padding:0;background-color:#f5f5f5;color:#161616;}.header{background:linear-gradient(135deg,#16697A 0%,#0D4F5C 100%);color:white;padding:40px 20px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-bottom:4px solid #0D4F5C;}.header h1{margin:0 0 15px 0;font-size:32px;font-weight:700;letter-spacing:0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.2);}.warning{background-color:#da1e28;color:white;padding:12px 24px;border-radius:6px;display:inline-block;font-weight:600;font-size:15px;margin:10px 0 0 0;box-shadow:0 2px 8px rgba(218,30,40,0.3);}.search-instructions{max-width:1600px;margin:20px auto;padding:18px 24px;background:#e3f2f7;border-left:5px solid #16697A;border-radius:6px;font-size:14px;box-shadow:0 2px 4px rgba(0,0,0,0.05);}.search-instructions strong{color:#16697A;font-weight:600;font-size:15px;}.intro-section{max-width:1600px;margin:20px auto;padding:25px;background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:3px solid #16697A;}.intro-section p{margin:10px 0;font-size:14px;line-height:1.7;}.intro-section strong{color:#16697A;font-weight:600;}.intro-section a{color:#16697A;font-weight:500;text-decoration:none;border-bottom:1px solid #16697A;}.intro-section a:hover{background:#e3f2f7;padding:2px 4px;border-radius:3px;}.workflow-steps h3{color:#16697A;font-size:18px;margin:0 0 15px 0;font-weight:600;}.workflow-steps ol{margin:0;padding-left:25px;}.workflow-steps li{margin:12px 0;line-height:1.7;}.workflow-steps li strong{color:#0D4F5C;}.exception-box{background-color:#fff3cd;border-left:5px solid #ff832b;padding:15px 20px;margin:15px 0;border-radius:6px;box-shadow:0 2px 4px rgba(255,131,43,0.1);}.exception-box strong{color:#0D4F5C;font-size:15px;}.note-box{background-color:#e3f2f7;border-left:5px solid #16697A;padding:15px 20px;margin:15px 0;border-radius:6px;}.note-box strong{color:#16697A;font-size:15px;}.procedures-container{max-width:1600px;margin:20px auto;padding:0 20px 40px 20px;}.category-section{margin-bottom:20px;border:2px solid #16697A;border-radius:8px;background:white}.category-section>summary{cursor:pointer;padding:16px 20px;background:linear-gradient(135deg,#16697A 0%,#0D4F5C 100%);color:white;font-size:16px;font-weight:600;list-style:none;user-select:none;border-radius:6px;display:flex;align-items:center;gap:10px}.category-section>summary::-webkit-details-marker{display:none}.category-section>summary::before{content:'▶';font-size:14px;transition:transform .2s}.category-section[open]>summary::before{content:'▼'}.category-section>summary:hover{opacity:.9}.category-content{padding:15px}.procedure-item{border:1px solid #e0e0e0;border-radius:6px;margin-bottom:8px;background:white;transition:all .2s ease}.procedure-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}.procedure-item[open]{background:#f9f9f9;border-color:#16697A}.procedure-summary{cursor:pointer;padding:14px;display:grid;grid-template-columns:20px 200px 1fr;gap:12px;align-items:center;list-style:none;user-select:none;}.procedure-summary::-webkit-details-marker{display:none;}.procedure-summary::before{content:'▶';color:#16697A;font-size:12px;width:20px;text-align:center;}.procedure-item[open] .procedure-summary::before{content:'▼';}.msg-code{font-family:'SF Mono','Consolas','Monaco','Courier New',monospace;font-size:13px;font-weight:700;color:#16697A;letter-spacing:0.5px;white-space:pre-line;}.description{font-size:13px;font-weight:400;color:#393939;line-height:1.5;}.procedure-details{padding:20px;border-top:2px solid #e0e0e0;background:white;}.proc-meta{display:grid;grid-template-columns:auto 1fr;gap:8px 15px;margin:0 0 15px 0;font-size:13px}.proc-meta dt{font-weight:600;color:#16697A;margin:0}.proc-meta dd{margin:0;color:#161616}.badge{padding:5px 10px;border-radius:4px;font-weight:700;font-size:11px;text-align:center;white-space:nowrap;display:inline-block;}.badge.p1{background:#da1e28;color:white;}.badge.p2{background:#ff832b;color:white;}.badge.p3{background:#f1c21b;color:#161616;}.badge.none{background:#e0e0e0;color:#525252;}.ops{background:#f5f5f5;padding:15px;border-radius:4px;margin-top:10px;font-size:13px;line-height:1.8;color:#161616}.ops>strong:first-child{color:#16697A;font-weight:600}.ops strong{color:#161616;font-weight:700}.ops p{margin:8px 0}.ops code{font-family:'SF Mono','Consolas','Monaco','Courier New',monospace;font-size:12px;background-color:#262626;color:#f4f4f4;border-radius:3px;padding:2px 6px;font-weight:600}.ops .exception-box{background-color:#fff3cd;border-left:4px solid #ff832b;padding:12px 16px;margin:12px 0;border-radius:4px}.ops .exception-box strong{color:#161616;font-weight:700}.ops .note-box{background-color:#e3f2f7;border-left:4px solid #16697A;padding:12px 16px;margin:12px 0;border-radius:4px}.ops .note-box strong{color:#161616;font-weight:700}.ops img{max-width:100%;height:auto;margin:12px 0;border:1px solid #e0e0e0;border-radius:4px;display:block}.ops ul,.ops ol{margin:8px 0 8px 20px;padding:0}.ops li{margin:4px 0}.ops a{color:#16697A;text-decoration:none;border-bottom:1px solid transparent;transition:border-bottom .2s}.ops a:hover{border-bottom:1px solid #16697A}</style>`;
+
+            const headerBlock = `<div class="header"><h1>IBM Mainframe Operational Procedures</h1><p class="warning">WARNING: Operations must respond to any WTOR within 15 minutes!</p></div><div class="search-instructions"><strong>📖 How to Search:</strong> Use your browser's search function (Ctrl+F on Windows/Linux or Cmd+F on Mac) to find specific message codes, systems, or keywords in this document.</div><div class="intro-section"><h2 style="color:#16697A; margin:0 0 20px 0; font-size:20px; font-weight:600;">⏱️ Operations Response Time</h2><p style="font-size:15px; line-height:1.7;"><strong>Operations should ALWAYS start working on alerts within 15 minutes</strong></p><p style="margin:15px 0 10px 0; font-size:14px; color:#525252;"><strong>For alerts without procedures:</strong></p><div class="exception-box" style="margin: 20px 0;"><strong>⚠️ z/VM Systems Exception:</strong> For all z/VM systems, place a P3 ticket to support team and inform support via Slack.</div><div class="workflow-steps"><h3>📋 Workflow Steps:</h3><ol><li><strong>Consult SME/IM:</strong> Identify the possible support team responsible for the issue by consulting the SME/IM and experienced co-workers.</li><li><strong>Identify Support Team:</strong> Refer to INV database (view ITOps Master at <a href="https://ibm.ent.box.com/folder/246732649636?s=k71y3un0sszyuae1hea9v7jl5idabjkb" rel="noopener noreferrer nofollow" target="_blank">this link</a>) or use OpsEngine tool.</li><li><strong>Out of Hours Escalation:</strong> If you cannot identify the support team and it's out of business hours, engage z/OS Support and open a P1 ticket. Seek their advice to identify the appropriate team and adjust the ticket queue accordingly.</li></ol><div class="note-box" style="margin-top: 15px;"><strong>📝 Important Notes:</strong><ul style="margin: 10px 0; padding-left: 20px;"><li><strong>Business hours:</strong> Contact support teams on Slack for solution</li><li><strong>Non-business hours:</strong> Send a message to their Slack channel or engage on-call support person according to instructions above</li></ul></div></div></div>`;
+
+            const categories = {
+              'I': { name: 'Procedimentos I', procedures: [], open: true },
+              'A': { name: 'Procedimentos A', procedures: [], open: false },
+              'D': { name: 'Procedimentos D', procedures: [], open: false },
+              'C': { name: 'Procedimentos C', procedures: [], open: false },
+              'BE': { name: 'Procedimentos B e E', procedures: [], open: false },
+              'WN$': { name: 'Procedimentos W, N e $', procedures: [], open: false },
+              'SJHO': { name: 'Procedimentos S, J, H e O', procedures: [], open: false },
+              'OUTROS': { name: 'Outros Procedimentos', procedures: [], open: false }
+            };
+
+            procedures.forEach(proc => {
+              const cat = proc.category || getCategory(proc.msgCode);
+              if (categories[cat]) {
+                categories[cat].procedures.push(proc);
+              }
+            });
+
+            let html = cssBlock + '\n' + headerBlock + '\n\n<div class="procedures-container">\n\n';
+
+            Object.keys(categories).forEach(catKey => {
+              const cat = categories[catKey];
+              if (cat.procedures.length === 0) return;
+
+              html += `<!-- ============ ${cat.name} ============ -->\n`;
+              html += `<details class="category-section"${cat.open ? ' open' : ''}>\n`;
+              html += `  <summary>${cat.name} (${cat.procedures.length})</summary>\n`;
+              html += `  <div class="category-content">\n\n`;
+
+              cat.procedures.forEach(proc => {
+                html += `    <details class="procedure-item">`;
+                html += `<summary class="procedure-summary">`;
+                html += `<span class="msg-code">${proc.msgCode}</span> `;
+                html += `<span class="description">${proc.description}</span>`;
+                html += `</summary>`;
+                html += `<div class="procedure-details">`;
+                html += `<dl class="proc-meta">`;
+                if (proc.system) html += `<dt>System</dt><dd>${proc.system}</dd>`;
+                if (proc.priority) {
+                  const badgeClass = proc.priority.toLowerCase();
+                  html += `<dt>Priority</dt><dd><span class="badge ${badgeClass}">${proc.priority}</span></dd>`;
+                }
+                if (proc.supportGroup) html += `<dt>Support</dt><dd>${proc.supportGroup}</dd>`;
+                if (proc.notes && proc.notes !== 'Not specified') html += `<dt>Notes</dt><dd>${proc.notes}</dd>`;
+                html += `</dl>`;
+                if (proc.action) {
+                  html += `<div class="ops"><strong>Action:</strong> ${proc.action}</div>`;
+                }
+                html += `</div></details>\n`;
+              });
+
+              html += `\n  </div>\n</details>\n\n`;
+            });
+
+            html += '</div>';
+
+            navigator.clipboard.writeText(html);
+            showNotification('Complete HTML with CSS copied to clipboard! ✓');
+          };
+
+          const importFromHTML = (htmlString) => {
+            try {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(htmlString, 'text/html');
+              const procedureItems = doc.querySelectorAll('.procedure-item');
+
+              const imported = Array.from(procedureItems).map((item, index) => {
+                const msgCode = item.querySelector('.msg-code')?.textContent?.trim() || '';
+                const description = item.querySelector('.description')?.innerHTML?.trim() || '';
+                const metaItems = item.querySelectorAll('.proc-meta dd');
+                const system = metaItems[0]?.textContent?.trim() || '';
+                const priorityBadge = item.querySelector('.badge');
+                const priority = priorityBadge?.classList.contains('p1') ? 'P1' :
+                               priorityBadge?.classList.contains('p2') ? 'P2' :
+                               priorityBadge?.classList.contains('p3') ? 'P3' : 'None';
+                const supportGroup = metaItems[2]?.textContent?.trim() || '';
+                const notes = metaItems[3]?.textContent?.trim() || '';
+                const action = item.querySelector('.ops')?.innerHTML?.replace(/<strong>Action:<\/strong>\s*/, '')?.trim() || '';
+
+                return {
+                  id: `proc-${Date.now()}-${index}`,
+                  msgCode,
+                  description,
+                  system,
+                  priority,
+                  supportGroup,
+                  notes,
+                  action,
+                  category: getCategory(msgCode)
+                };
+              });
+
+              setProcedures(imported);
+              showNotification(`${imported.length} procedures imported! ✓`);
+            } catch (error) {
+              showNotification('Import failed: ' + error.message, 'error');
+            }
+          };
+
+          const addProcedure = (data) => {
+            if (editingProcedure) {
+              setProcedures(procedures.map(p =>
+                p.id === editingProcedure.id ? { ...data, id: p.id, category: getCategory(data.msgCode) } : p
+              ));
+              showNotification('Procedure updated! ✓');
+            } else {
+              setProcedures([...procedures, {
+                ...data,
+                id: `proc-${Date.now()}`,
+                category: getCategory(data.msgCode)
+              }]);
+              showNotification('Procedure added! ✓');
+            }
+            setShowForm(false);
+            setEditingProcedure(null);
+          };
+
+          const deleteProcedure = (id) => {
+            if (confirm('Delete this procedure?')) {
+              setProcedures(procedures.filter(p => p.id !== id));
+              showNotification('Procedure deleted! ✓');
+            }
+          };
+
+          const filteredProcedures = procedures.filter(proc =>
+            !searchTerm ||
+            proc.msgCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            proc.description.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+
+          return (
+            <div className="flex h-screen bg-carbon-bg font-ibm">
+              {/* Sidebar */}
+              <div className="w-80 bg-carbon-ui-01 border-r border-carbon-ui-03 flex flex-col">
+                <div className="p-4 border-b border-carbon-ui-03 bg-carbon-ui-02">
+                  <button
+                    onClick={onBack}
+                    className="w-full flex items-center gap-2 px-4 py-2 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 transition-colors mb-4"
+                  >
+                    <Icon name="arrow-left" size={18} />
+                    Back to Home
+                  </button>
+                  <h2 className="text-lg font-semibold text-carbon-text-01 mb-3">1756 Procedures Editor</h2>
+
+                  {/* How to Use Section */}
+                  <details className="mb-4">
+                    <summary className="cursor-pointer text-carbon-text-02 text-sm font-medium flex items-center gap-2 hover:text-carbon-link-01 transition-colors mb-2">
+                      <span>📖</span>
+                      <span>How to Use</span>
+                    </summary>
+                    <div className="mt-2 p-3 bg-carbon-ui-02 border-l-2 border-carbon-link-01 text-carbon-text-02 text-xs">
+                      <ol className="space-y-2 mb-3">
+                        <li>
+                          <strong className="text-carbon-text-01">1. Import</strong>
+                          <div className="ml-3 mt-1 text-[11px] space-y-0.5">
+                            <div>• Click "Import HTML"</div>
+                            <div>• Paste 1756 HTML content</div>
+                            <div>• Procedures load in sidebar</div>
+                          </div>
+                        </li>
+                        <li>
+                          <strong className="text-carbon-text-01">2. Edit/Delete</strong>
+                          <div className="ml-3 mt-1 text-[11px] space-y-0.5">
+                            <div>• Click procedure to edit</div>
+                            <div>• Use toolbar to format</div>
+                            <div>• Click "Delete" if needed</div>
+                          </div>
+                        </li>
+                        <li>
+                          <strong className="text-carbon-text-01">3. Add New</strong>
+                          <div className="ml-3 mt-1 text-[11px] space-y-0.5">
+                            <div>• Click "Add Procedure"</div>
+                            <div>• Fill required fields</div>
+                            <div>• Add images: Paste/Drag/Click</div>
+                          </div>
+                        </li>
+                        <li>
+                          <strong className="text-carbon-text-01">4. Export</strong>
+                          <div className="ml-3 mt-1 text-[11px] space-y-0.5">
+                            <div>• Click "Export HTML"</div>
+                            <div>• Complete HTML copied</div>
+                            <div>• Paste into ServiceNow</div>
+                          </div>
+                        </li>
+                      </ol>
+                      <div className="pt-2 border-t border-carbon-ui-03">
+                        <strong className="text-carbon-text-01">💡 Tips:</strong>
+                        <div className="ml-3 mt-1 text-[11px] space-y-0.5">
+                          <div>• Search filters in real-time</div>
+                          <div>• Ctrl+V to paste images</div>
+                          <div>• Line breaks → &lt;br/&gt; auto</div>
+                        </div>
+                      </div>
+                    </div>
+                  </details>
+
+                  <button
+                    onClick={() => { setShowForm(true); setEditingProcedure(null); }}
+                    className="w-full px-4 py-3 bg-carbon-support-04 hover:bg-blue-600 text-white font-medium transition-colors mb-2"
+                  >
+                    Add Procedure
+                  </button>
+                  <button
+                    onClick={() => {
+                      const html = prompt('Paste HTML to import:');
+                      if (html) importFromHTML(html);
+                    }}
+                    className="w-full px-4 py-2 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 transition-colors mb-2"
+                  >
+                    Import HTML
+                  </button>
+                  <button
+                    onClick={exportToHTML}
+                    className="w-full px-4 py-2 bg-carbon-support-02 hover:bg-green-700 text-carbon-bg font-medium transition-colors"
+                  >
+                    📋 Export HTML
+                  </button>
+                </div>
+
+                <div className="p-4 border-b border-carbon-ui-03">
+                  <input
+                    type="text"
+                    placeholder="Search procedures..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-3 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                  />
+                  <div className="mt-2 text-xs text-carbon-text-03 font-ibm-mono">
+                    {procedures.length} total · {filteredProcedures.length} shown
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-2">
+                  {filteredProcedures.map(proc => (
+                    <div
+                      key={proc.id}
+                      onClick={() => { setEditingProcedure(proc); setShowForm(true); }}
+                      className="px-3 py-2 mb-1 bg-carbon-bg hover:bg-carbon-ui-02 border border-carbon-ui-03 cursor-pointer transition-colors"
+                    >
+                      <div className="text-sm font-semibold text-carbon-text-01 font-ibm-mono">{proc.msgCode}</div>
+                      <div className="text-xs text-carbon-text-02 mt-1 truncate">{proc.description.replace(/<[^>]*>/g, '')}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Main Content */}
+              <div className="flex-1 overflow-y-auto p-8">
+                {showForm ? (
+                  <ProcedureForm
+                    procedure={editingProcedure}
+                    onSave={addProcedure}
+                    onCancel={() => { setShowForm(false); setEditingProcedure(null); }}
+                    onDelete={editingProcedure ? () => { deleteProcedure(editingProcedure.id); setShowForm(false); } : null}
+                    showNotification={showNotification}
+                  />
+                ) : (
+                  <div className="text-center py-20 text-carbon-text-03">
+                    <div className="text-6xl mb-4">🖥️</div>
+                    <h2 className="text-2xl font-semibold text-carbon-text-01 mb-2">Welcome to 1756 Procedures Editor</h2>
+                    <p className="text-carbon-text-02 max-w-md mx-auto leading-relaxed">
+                      Start by clicking <strong className="text-carbon-text-01">"Import HTML"</strong> to load existing procedures,
+                      then you can edit or delete them, add new procedures, and finally export the complete HTML.
+                    </p>
+                    <p className="text-carbon-text-03 text-sm mt-3">
+                      Click 📖 "How to Use" above for detailed step-by-step instructions
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Notification */}
+              {notification && (
+                <div className={`fixed top-4 right-4 ${notification.type === 'error' ? 'bg-carbon-support-01' : 'bg-carbon-support-02'} text-white px-6 py-3 flex items-center gap-2 z-50 shadow-lg`}>
+                  <Icon name={notification.type === 'success' ? 'check' : 'alert-circle'} size={20} />
+                  <span>{notification.message}</span>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        // Procedure Form with Image Upload
+        const ProcedureForm = ({ procedure, onSave, onCancel, onDelete, showNotification }) => {
+          const [formData, setFormData] = useState(procedure || {
+            msgCode: '',
+            description: '',
+            system: '',
+            priority: 'None',
+            supportGroup: '',
+            notes: '',
+            action: ''
+          });
+
+          const [isDragging, setIsDragging] = useState(false);
+          const actionRef = useRef(null);
+          const fileInputRef = useRef(null);
+
+          const insertAtCursor = (text) => {
+            const textarea = actionRef.current;
+            if (!textarea) return;
+
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const currentValue = formData.action || '';
+            const newValue = currentValue.substring(0, start) + text + currentValue.substring(end);
+
+            setFormData({ ...formData, action: newValue });
+
+            setTimeout(() => {
+              textarea.focus();
+              textarea.setSelectionRange(start + text.length, start + text.length);
+            }, 0);
+          };
+
+          // Helper: Format bytes for display
+          const formatBytes = (bytes) => {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+          };
+
+          const imageToBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+          };
+
+          // Compress image if larger than threshold
+          const compressImage = async (file, threshold = 200000) => {
+            // If file is small, don't compress
+            if (file.size < threshold) {
+              const base64 = await imageToBase64(file);
+              return {
+                base64,
+                compressed: false,
+                originalSize: file.size,
+                finalSize: file.size
+              };
+            }
+
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+
+              reader.onload = (e) => {
+                const img = new Image();
+
+                img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  let width = img.width;
+                  let height = img.height;
+
+                  // Resize maintaining aspect ratio
+                  const maxDimension = 1200;
+                  if (width > maxDimension || height > maxDimension) {
+                    if (width > height) {
+                      height = (height * maxDimension) / width;
+                      width = maxDimension;
+                    } else {
+                      width = (width * maxDimension) / height;
+                      height = maxDimension;
+                    }
+                  }
+
+                  canvas.width = width;
+                  canvas.height = height;
+
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(img, 0, 0, width, height);
+
+                  // Determine format (PNG for transparency, JPEG otherwise)
+                  const format = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                  const quality = format === 'image/jpeg' ? 0.85 : 1;
+
+                  const compressed = canvas.toDataURL(format, quality);
+
+                  // Calculate approximate final size (base64 is ~33% larger than binary)
+                  const finalSize = Math.round(compressed.length * 0.75);
+
+                  resolve({
+                    base64: compressed,
+                    compressed: true,
+                    originalSize: file.size,
+                    finalSize
+                  });
+                };
+
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = e.target.result;
+              };
+
+              reader.onerror = () => reject(new Error('Failed to read file'));
+              reader.readAsDataURL(file);
+            });
+          };
+
+          const handleFileSelect = async (files) => {
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+
+            if (imageFiles.length === 0) {
+              showNotification('Please select image files only', 'error');
+              return;
+            }
+
+            try {
+              for (const file of imageFiles) {
+                // Compress image
+                const result = await compressImage(file);
+
+                // Insert into HTML
+                const imgTag = `<img src="${result.base64}" alt="${file.name}" />`;
+                insertAtCursor(imgTag);
+
+                // Show notification with stats
+                if (result.compressed) {
+                  const reduction = Math.round(
+                    ((result.originalSize - result.finalSize) / result.originalSize) * 100
+                  );
+                  showNotification(
+                    `Image compressed: ${formatBytes(result.originalSize)} → ${formatBytes(result.finalSize)} (${reduction}% smaller) ✓`
+                  );
+                } else {
+                  showNotification(`Image inserted (${formatBytes(result.finalSize)}) ✓`);
+                }
+              }
+            } catch (error) {
+              showNotification('Error processing image: ' + error.message, 'error');
+            }
+          };
+
+          const handlePaste = async (e) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            const imageItems = Array.from(items).filter(item => item.type.startsWith('image/'));
+
+            if (imageItems.length > 0) {
+              e.preventDefault();
+
+              try {
+                for (const item of imageItems) {
+                  const file = item.getAsFile();
+                  if (file) {
+                    // Compress image
+                    const result = await compressImage(file);
+
+                    // Insert into HTML
+                    const imgTag = `<img src="${result.base64}" alt="Pasted image" />`;
+                    insertAtCursor(imgTag);
+
+                    // Show notification with stats
+                    if (result.compressed) {
+                      const reduction = Math.round(
+                        ((result.originalSize - result.finalSize) / result.originalSize) * 100
+                      );
+                      showNotification(
+                        `Image compressed: ${formatBytes(result.originalSize)} → ${formatBytes(result.finalSize)} (${reduction}% smaller) ✓`
+                      );
+                    } else {
+                      showNotification(`Image pasted (${formatBytes(result.finalSize)}) ✓`);
+                    }
+                  }
+                }
+              } catch (error) {
+                showNotification('Error processing image: ' + error.message, 'error');
+              }
+            }
+          };
+
+          const handleDrop = (e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+              handleFileSelect(files);
+            }
+          };
+
+          const handleDragOver = (e) => {
+            e.preventDefault();
+            setIsDragging(true);
+          };
+
+          const handleDragLeave = () => {
+            setIsDragging(false);
+          };
+
+          const handleSubmit = (e) => {
+            e.preventDefault();
+            let action = formData.action;
+            if (action && !action.includes('<br') && !action.includes('<p>') && !action.includes('<div>')) {
+              action = action.replace(/\n/g, '<br/>');
+            }
+            onSave({ ...formData, action });
+          };
+
+          return (
+            <div className="max-w-4xl mx-auto bg-carbon-ui-01 p-8 border border-carbon-ui-03">
+              <h2 className="text-2xl font-semibold text-carbon-text-01 mb-6">
+                {procedure ? 'Edit Procedure' : 'New Procedure'}
+              </h2>
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-5">
+                  <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Message Code *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.msgCode}
+                    onChange={(e) => setFormData({ ...formData, msgCode: e.target.value })}
+                    placeholder="e.g., IOS351I"
+                    className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Description *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Brief description of the message"
+                    className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4 mb-5">
+                  <div>
+                    <label className="block font-medium mb-2 text-carbon-text-01 text-sm">System</label>
+                    <input
+                      type="text"
+                      value={formData.system}
+                      onChange={(e) => setFormData({ ...formData, system: e.target.value })}
+                      placeholder="e.g., ALL"
+                      className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Priority</label>
+                    <select
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                      className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                    >
+                      <option value="None">None</option>
+                      <option value="P1">P1</option>
+                      <option value="P2">P2</option>
+                      <option value="P3">P3</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Support Group</label>
+                    <input
+                      type="text"
+                      value={formData.supportGroup}
+                      onChange={(e) => setFormData({ ...formData, supportGroup: e.target.value })}
+                      placeholder="e.g., ZOS"
+                      className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-5">
+                  <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Notes</label>
+                  <input
+                    type="text"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Optional notes"
+                    className="w-full px-4 py-2 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block font-medium mb-2 text-carbon-text-01 text-sm">Operations Action</label>
+
+                  {/* Toolbar */}
+                  <div className="mb-2 p-3 bg-carbon-ui-02 border-b border-carbon-ui-03 flex flex-wrap gap-1">
+                    <button type="button" onClick={() => insertAtCursor('<strong></strong>')} className="px-3 py-1 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 text-sm transition-colors">
+                      <strong>B</strong> Bold
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor('<div class="exception-box"><strong>⚠️ Exception:</strong> </div>')} className="px-3 py-1 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 text-sm transition-colors">
+                      ⚠️ Exception
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor('<div class="note-box"><strong>📝 Note:</strong> </div>')} className="px-3 py-1 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 text-sm transition-colors">
+                      📝 Note
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor('<code></code>')} className="px-3 py-1 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 text-sm transition-colors">
+                      &lt;&gt; Code
+                    </button>
+                    <button type="button" onClick={() => insertAtCursor('<a href="" target="_blank"></a>')} className="px-3 py-1 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 text-sm transition-colors">
+                      🔗 Link
+                    </button>
+                  </div>
+
+                  {/* Image Upload */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => handleFileSelect(e.target.files)}
+                    className="hidden"
+                  />
+
+                  <div
+                    className={`drag-drop-area ${isDragging ? 'dragging' : ''} p-6 text-center mb-2 cursor-pointer`}
+                    onClick={() => fileInputRef.current?.click()}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                  >
+                    <div className="text-4xl mb-2">🖼️</div>
+                    <div className="text-sm font-medium text-carbon-text-01 mb-1">
+                      Click to select, drag & drop, or paste images
+                    </div>
+                    <div className="text-xs text-carbon-text-03">
+                      Images will be embedded as base64
+                    </div>
+                  </div>
+
+                  <textarea
+                    ref={actionRef}
+                    value={formData.action}
+                    onChange={(e) => setFormData({ ...formData, action: e.target.value })}
+                    onPaste={handlePaste}
+                    placeholder="Enter operations action. Paste images directly here (Ctrl+V)."
+                    rows={14}
+                    className="w-full px-4 py-3 bg-carbon-bg text-carbon-text-01 border border-carbon-ui-03 focus:border-carbon-link-01 focus:outline-none font-ibm-mono text-sm resize-vertical"
+                  />
+                  <div className="text-xs text-carbon-text-03 mt-2">
+                    💡 Tip: Ctrl+V to paste images directly · Enter for line breaks (auto-converts to &lt;br/&gt;)
+                  </div>
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={onDelete}
+                      className="px-6 py-2 bg-carbon-support-01 hover:bg-red-700 text-white font-medium transition-colors"
+                    >
+                      Delete
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="px-6 py-2 bg-carbon-ui-03 hover:bg-carbon-ui-04 text-carbon-text-01 font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-carbon-support-04 hover:bg-blue-600 text-white font-medium transition-colors"
+                  >
+                    {procedure ? 'Update' : 'Create'} Procedure
+                  </button>
+                </div>
+              </form>
+            </div>
+          );
+        };
+
+        const App = () => {
+          const [currentView, setCurrentView] = useState('HOME');
+
+          return (
+            <>
+              {currentView === 'HOME' && <HomeScreen onSelectEditor={setCurrentView} />}
+              {currentView === 'GENERAL' && <GeneralEditor onBack={() => setCurrentView('HOME')} />}
+              {currentView === '1756' && <Editor1756 onBack={() => setCurrentView('HOME')} />}
+            </>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
-    
-    <style>
-        /* Image container styles for ServiceNow KB articles */
-        .editor-content .img-container {
-            margin: 1.5em 0;
-            text-align: center;
-        }
-        
-        .editor-content .img-container.img-small {
-            max-width: 300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .editor-content .img-container.img-medium {
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .editor-content .img-container.img-large {
-            max-width: 100%;
-        }
-        
-        .editor-content .img-container img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-        }
-        
-        /* Placeholder for broken ServiceNow images */
-        .editor-content img[src^="/sys_attachment.do"] {
-            min-height: 100px;
-            background: linear-gradient(135deg, #f1f5f9 25%, transparent 25%),
-                        linear-gradient(225deg, #f1f5f9 25%, transparent 25%),
-                        linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
-                        linear-gradient(315deg, #f1f5f9 25%, #e2e8f0 25%);
-            background-position: 10px 0, 10px 0, 0 0, 0 0;
-            background-size: 20px 20px;
-            background-repeat: repeat;
-            position: relative;
-        }
-        
-        .editor-content img[src^="/sys_attachment.do"]::after {
-            content: '🖼️ ServiceNow Image (will display in ServiceNow)';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #64748b;
-            white-space: nowrap;
-        }
-    </style>
 </body>
 </html>
