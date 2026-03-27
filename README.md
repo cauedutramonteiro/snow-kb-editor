@@ -1,4 +1,4 @@
-# ServiceNow Editors Suite - IBM Carbon Dark Theme
+# ServiceNow Editors Suite - IBM
 
 Uma suíte completa de editores HTML para ServiceNow Knowledge Base, com design profissional IBM Carbon Dark e funcionalidades avançadas.
 
